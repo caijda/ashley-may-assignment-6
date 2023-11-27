@@ -4,7 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class SaleService {
@@ -29,8 +32,9 @@ public class SaleService {
         return modelName;
     }
 
-    public void salesReport(List<Sale> sales, String fileName) throws FileNotFoundException, IOException {
+    public void salesReport(String fileName) throws FileNotFoundException, IOException {
         FileService service = new FileService();
+        List<Sale> sales = new ArrayList<>();
         String modelName = ModelName(fileName);
 
         System.out.println(modelName + " Yearly Sales Report");
@@ -45,8 +49,11 @@ public class SaleService {
 
         System.out.println("");
 
+        bestAndWorst(sales, modelName);
 
+        System.out.println("");
 
+        sales.clear();
     }
 
     public void calculateSales(List<Sale> sales, Integer year) {
@@ -63,4 +70,15 @@ public class SaleService {
         }
     }
 
+    public void bestAndWorst(List<Sale> sales, String modelName){
+        Sale best = sales.stream()
+            .max(Comparator.comparing(Sale::getSales))
+            .orElseThrow(NoSuchElementException::new);
+        System.out.println("The best month for " + modelName + " was:" + best.getMonth());
+
+        Sale worst = sales.stream()
+            .min(Comparator.comparing(Sale::getSales))
+            .orElseThrow(NoSuchElementException::new);
+        System.out.println("The worst month for " + modelName + " was:" + worst.getMonth());
+    }
 }
