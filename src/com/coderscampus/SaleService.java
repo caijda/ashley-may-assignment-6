@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class SaleService {
@@ -42,10 +43,14 @@ public class SaleService {
 
         sales = service.readFile(fileName);
 
-        calculateSales(sales, 2016);
-        calculateSales(sales, 2017);
-        calculateSales(sales, 2018);
-        calculateSales(sales, 2019);
+        List<Integer> years = sales.stream()
+            .map(s -> s.getMonth().getYear())
+            .distinct()
+            .collect(Collectors.toList());
+                
+        for (Integer year : years) {
+        calculateSales(sales, year);
+        }
 
         System.out.println("");
 
